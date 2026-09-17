@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Setlog — 3 direcții de design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ==================================================================
+   SETLOG — trei teme peste exact aceleași ecrane.
+
+   PULSE  dark, mono, accent acid           (monkeytype, Linear)
+   FRESH  light, rotunjit, umbre moi        (Glovo, Yandex Go, Bolt)
+   INK    alb, contururi fine, editorial    (dev.to, Vercel)
+================================================================== */
+
+/* ---------- PULSE: dark + lime ---------- */
+body[data-theme="pulse"]{
+  --bg:#0E0F13; --surface:#16181E; --surface-2:#1C1F27; --raise:#22262F;
+  --text:#E8EAED; --muted:#8A919E; --line:#262A33;
+  --accent:#D7F55B; --on-accent:#14160C; --accent-soft:#2A3016;
+  --pos:#4ADE80; --neg:#FF6B6B; --warn:#FFC53D;
+  --m1:#7C6BFF; --m2:#4ADE80; --m3:#FF6B6B; --m4:#FFC53D; --m5:#59C3FF;
+  --sans:"Space Grotesk",-apple-system,"Segoe UI",sans-serif;
+  --disp:"Space Grotesk",sans-serif;
+  --num:"JetBrains Mono",ui-monospace,monospace;
+  --disp-w:700; --num-w:700; --track:-0.02em;
+  --r:12px; --r-sm:8px; --pill:8px;
+  --shadow:none; --shadow-lg:none;
+  --card-border:1px solid var(--line);
+}
+/* ---------- FRESH: light, rotunjit, verde ---------- */
+body[data-theme="fresh"]{
+  --bg:#F4F6F8; --surface:#FFFFFF; --surface-2:#F0F3F6; --raise:#E8ECF1;
+  --text:#101828; --muted:#69758A; --line:#E6EAF0;
+  --accent:#00C27A; --on-accent:#FFFFFF; --accent-soft:#E2F8EF;
+  --pos:#00A86B; --neg:#FF5A3C; --warn:#FFB020;
+  --m1:#3B6BFF; --m2:#00A86B; --m3:#FF5A3C; --m4:#FFB020; --m5:#8B5CF6;
+  --sans:"Plus Jakarta Sans",-apple-system,"Segoe UI",sans-serif;
+  --disp:"Plus Jakarta Sans",sans-serif;
+  --num:"Plus Jakarta Sans",sans-serif;
+  --disp-w:800; --num-w:800; --track:-0.03em;
+  --r:20px; --r-sm:14px; --pill:999px;
+  --shadow:0 1px 2px rgba(16,24,40,.05), 0 6px 20px rgba(16,24,40,.05);
+  --shadow-lg:0 12px 40px rgba(16,24,40,.10);
+  --card-border:1px solid transparent;
+}
+/* ---------- INK: alb, contur, albastru electric ---------- */
+body[data-theme="ink"]{
+  --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F7F8FA; --raise:#F0F2F5;
+  --text:#0B0D12; --muted:#6B7280; --line:#E5E7EB;
+  --accent:#2B59FF; --on-accent:#FFFFFF; --accent-soft:#EEF2FF;
+  --pos:#12925B; --neg:#DC2626; --warn:#B45309;
+  --m1:#2B59FF; --m2:#12925B; --m3:#DC2626; --m4:#B45309; --m5:#7C3AED;
+  --sans:"Inter",-apple-system,"Segoe UI",sans-serif;
+  --disp:"Space Grotesk",sans-serif;
+  --num:"Space Grotesk",sans-serif;
+  --disp-w:700; --num-w:700; --track:-0.025em;
+  --r:10px; --r-sm:7px; --pill:999px;
+  --shadow:none; --shadow-lg:0 8px 30px rgba(11,13,18,.08);
+  --card-border:1px solid var(--line);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--sans);
+  font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+  transition:background .2s, color .2s;
+}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.num{font-family:var(--num);font-weight:var(--num-w);font-variant-numeric:tabular-nums;letter-spacing:var(--track);line-height:.95}
+h1,h2,h3{font-family:var(--disp);font-weight:var(--disp-w);letter-spacing:var(--track)}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-columns:238px 1fr;min-height:100vh}
+.rail{padding:18px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:24px;border-right:1px solid var(--line)}
+body[data-theme="fresh"] .rail{border-right:0;background:var(--bg)}
+.wordmark{display:flex;align-items:center;gap:9px;padding:6px 10px}
+.mark{width:30px;height:30px;border-radius:9px;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-family:var(--disp);font-weight:var(--disp-w);font-size:17px;flex:none}
+body[data-theme="fresh"] .mark{border-radius:12px}
+.wordmark b{font-family:var(--disp);font-weight:var(--disp-w);font-size:19px;letter-spacing:var(--track)}
+.nav{display:flex;flex-direction:column;gap:3px}
+.nav button{display:flex;align-items:center;gap:11px;width:100%;padding:10px 12px;border-radius:var(--r-sm);color:var(--muted);text-align:left;font-size:14.5px;font-weight:500;transition:.15s}
+.nav button:hover{background:var(--surface-2);color:var(--text)}
+.nav button[aria-current="page"]{background:var(--text);color:var(--bg)}
+body[data-theme="pulse"] .nav button[aria-current="page"]{background:var(--accent);color:var(--on-accent)}
+body[data-theme="fresh"] .nav button[aria-current="page"]{background:var(--accent);color:#fff;box-shadow:var(--shadow)}
+.ic{width:18px;flex:none;text-align:center;font-size:15px}
+.rail .foot{margin-top:auto;display:grid;gap:4px}
+.me{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:var(--r-sm);width:100%}
+.me:hover{background:var(--surface-2)}
+.me small{display:block;color:var(--muted);font-size:12px}
+.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--disp);font-size:14px;font-weight:var(--disp-w);color:#fff;flex:none}
+
+.main{min-width:0}
+.topbar{display:flex;align-items:center;gap:12px;padding:14px 28px;position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+body[data-theme="fresh"] .topbar{border-bottom:0}
+.topbar h1{font-size:23px;margin:0}
+.spacer{flex:1}
+.search{position:relative;width:250px;flex:none}
+.search input{width:100%;padding:9px 12px 9px 32px;border:1px solid var(--line);border-radius:var(--pill);background:var(--surface-2);color:var(--text);font:inherit;font-size:14px}
+body[data-theme="fresh"] .search input{border-color:transparent;background:var(--surface);box-shadow:var(--shadow)}
+.search input::placeholder{color:var(--muted)}
+.search i{position:absolute;left:11px;top:9px;color:var(--muted);font-style:normal}
+.wrap{padding:24px 28px 96px;max-width:1080px}
+
+/* comutator de teme */
+.themes{display:flex;gap:4px;padding:3px;background:var(--surface-2);border-radius:var(--pill)}
+.themes button{padding:6px 12px;border-radius:var(--pill);font-size:12.5px;font-weight:600;color:var(--muted)}
+.themes button[aria-pressed="true"]{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+body[data-theme="pulse"] .themes button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+
+/* bara de endpoint-uri */
+.apibar{display:none;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 28px;background:var(--surface-2);font-size:12.5px;position:sticky;top:57px;z-index:19;border-bottom:1px solid var(--line)}
+body.api .apibar{display:flex}
+.apibar b{font-weight:500;color:var(--muted)}
+.ep{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;background:var(--surface);border:1px solid var(--line);padding:3px 9px;border-radius:var(--pill)}
+.m{font-weight:700}
+.m.GET{color:var(--pos)}.m.POST{color:var(--m1)}.m.PATCH{color:var(--warn)}.m.DELETE{color:var(--neg)}
+.toggle{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);border:1px solid var(--line);padding:7px 12px;border-radius:var(--pill)}
+.toggle .dot{width:7px;height:7px;border-radius:50%;background:var(--line)}
+body.api .toggle .dot{background:var(--pos)}
+
+/* ---------- componente ---------- */
+.btn{background:var(--text);color:var(--bg);padding:9px 17px;border-radius:var(--pill);font-size:14px;font-weight:600;transition:.15s}
+.btn:hover{opacity:.88}
+.btn.primary{background:var(--accent);color:var(--on-accent)}
+body[data-theme="fresh"] .btn.primary{box-shadow:0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent)}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--surface-2);opacity:1}
+.btn.sm{padding:6px 12px;font-size:13px}
+.card{background:var(--surface);border:var(--card-border);border-radius:var(--r);box-shadow:var(--shadow)}
+.muted{color:var(--muted)}
+.tiny{font-size:12.5px}
+.row{display:flex;align-items:center;gap:10px}
+.sec-h{display:flex;align-items:baseline;gap:12px;margin:0 0 14px}
+.sec-h h2{font-size:19px;margin:0}
+.sec-h a{font-size:13px;color:var(--accent);text-decoration:none;font-weight:600}
+body[data-theme="ink"] .sec-h a,body[data-theme="fresh"] .sec-h a{color:var(--accent)}
+.empty{border:1px dashed var(--line);border-radius:var(--r);padding:34px;text-align:center;color:var(--muted);background:var(--surface-2)}
+.empty p{margin:0 0 14px}
+.pill{font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:var(--pill);background:var(--surface-2);color:var(--muted)}
+
+/* statistici */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{background:var(--surface);border:var(--card-border);border-radius:var(--r);box-shadow:var(--shadow);padding:16px 18px}
+.stat .k{font-size:12.5px;color:var(--muted);font-weight:500}
+.stat .v{font-size:34px;margin:8px 0 6px;display:flex;align-items:baseline;gap:5px}
+.stat .v s{font-family:var(--sans);font-size:13px;font-weight:500;text-decoration:none;color:var(--muted)}
+.delta{font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:var(--pill);background:var(--surface-2)}
+.up{color:var(--pos)}.down{color:var(--neg)}
+.up.delta{background:color-mix(in srgb,var(--pos) 13%,transparent)}
+
+/* saptamani */
+.weeks{display:grid;gap:12px}
+.week{display:flex;align-items:center;gap:16px;background:var(--surface);border:var(--card-border);border-radius:var(--r);box-shadow:var(--shadow);width:100%;text-align:left;padding:16px 18px;transition:.16s}
+.week:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg);border-color:var(--muted)}
+body[data-theme="fresh"] .week:hover{border-color:transparent}
+.week .idx{width:46px;height:46px;flex:none;border-radius:var(--r-sm);background:var(--surface-2);display:grid;place-items:center;font-size:19px}
+.week h3{margin:0;font-size:16px;display:flex;align-items:center;gap:8px}
+.week .meta{font-size:13px;color:var(--muted);margin-top:2px}
+.bar{height:6px;background:var(--raise);border-radius:99px;overflow:hidden;margin-top:9px;max-width:320px}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--accent)}
+
+/* antrenamente */
+.wk-list{display:grid;gap:12px}
+.wk{display:flex;gap:16px;align-items:center;background:var(--surface);border:var(--card-border);border-radius:var(--r);box-shadow:var(--shadow);padding:15px 18px;width:100%;text-align:left;transition:.16s}
+.wk:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.wk .d{width:48px;height:48px;flex:none;border-radius:var(--r-sm);display:grid;place-content:center;text-align:center;color:#fff}
+.wk .d .num{font-size:19px;display:block}
+.wk .d small{font-size:10px;opacity:.85;text-transform:uppercase;letter-spacing:.06em}
+.wk h3{margin:0;font-size:15.5px}
+.wk .meta{font-size:13px;color:var(--muted);margin-top:1px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+
+/* jurnalul de seturi */
+.ex{background:var(--surface);border:var(--card-border);border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
+.ex-h{display:flex;align-items:center;gap:12px;padding:14px 18px}
+.ex-h .tag{width:10px;height:10px;border-radius:3px;flex:none}
+.ex-h h3{margin:0;font-size:16px;flex:1}
+.ex-h .top{font-size:12.5px;color:var(--muted)}
+.ex-h .top b{color:var(--text)}
+.sets{width:100%;border-collapse:collapse}
+.sets th{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 18px;background:var(--surface-2)}
+.sets td{padding:11px 18px;border-top:1px solid var(--line);vertical-align:middle}
+body[data-theme="fresh"] .sets td{border-top-color:var(--surface-2)}
+.sets .n{width:34px;color:var(--muted);font-family:var(--num);font-size:13px}
+.sets .kg .num{font-size:23px}
+.sets .kg s{text-decoration:none;font-size:12px;color:var(--muted);font-family:var(--sans);font-weight:500;margin-left:3px}
+.sets .reps{width:96px}
+.sets .vol{width:110px;color:var(--muted);font-size:13px}
+.sets .cmp{width:130px;font-size:12.5px}
+.pr{display:inline-flex;align-items:center;gap:4px;background:var(--accent);color:var(--on-accent);font-size:10px;font-weight:700;letter-spacing:.06em;padding:3px 8px;border-radius:var(--pill);margin-left:6px}
+.ex-f{padding:11px 18px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center}
+body[data-theme="fresh"] .ex-f{border-top-color:var(--surface-2)}
+
+/* progres */
+.chart{background:var(--surface);border:var(--card-border);border-radius:var(--r);box-shadow:var(--shadow);padding:20px}
+.pick{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+.pick button{border:1px solid var(--line);padding:6px 13px;border-radius:var(--pill);font-size:13px;font-weight:500;color:var(--muted)}
+.pick button[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+body[data-theme="pulse"] .pick button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+
+/* blog */
+.feed{display:grid;gap:12px}
+.post{display:flex;gap:16px;background:var(--surface);border:var(--card-border);border-radius:var(--r);box-shadow:var(--shadow);padding:18px 20px;width:100%;text-align:left;transition:.16s}
+.post:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.post h3{margin:0 0 5px;font-size:19px;line-height:1.28}
+.post .by{font-size:13px;color:var(--muted);margin-bottom:6px}
+.post .exc{font-size:14px;color:var(--muted);margin:0;line-height:1.55}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag-b{font-size:12px;font-weight:500;padding:3px 10px;border-radius:var(--pill);background:var(--surface-2);color:var(--muted)}
+.tag-b.on{background:var(--text);color:var(--bg)}
+.article{background:var(--surface);border:var(--card-border);border-radius:var(--r);box-shadow:var(--shadow);padding:34px 38px;max-width:740px}
+.article h1{font-size:36px;line-height:1.12;margin:0 0 12px}
+.article p{font-size:16.5px;line-height:1.72;max-width:66ch;color:var(--text)}
+.article h2{font-size:22px;margin:28px 0 8px}
+.article blockquote{margin:22px 0;padding:14px 18px;border-left:3px solid var(--accent);background:var(--surface-2);border-radius:0 var(--r-sm) var(--r-sm) 0;color:var(--muted);font-size:16px}
+.likebar{display:flex;gap:10px;align-items:center;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:26px 0}
+.like{display:flex;align-items:center;gap:8px;border:1px solid var(--line);padding:8px 16px;border-radius:var(--pill);font-size:14px;font-weight:600}
+.like[aria-pressed="true"]{border-color:var(--neg);color:var(--neg);background:color-mix(in srgb,var(--neg) 10%,transparent)}
+.comment{display:flex;gap:12px;padding:16px 0;border-bottom:1px solid var(--line)}
+.comment p{margin:4px 0 0;font-size:14.5px}
+.comment .who b{font-weight:600;font-size:13.5px}
+textarea,.editor input{width:100%;border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;font:inherit;background:var(--surface-2);color:var(--text)}
+textarea{resize:vertical;line-height:1.6}
+.editor{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.editor textarea{min-height:330px;font-size:15px}
+.editor .ttl{font-family:var(--disp);font-size:26px;font-weight:var(--disp-w);letter-spacing:var(--track)}
+.prev{background:var(--surface);border:var(--card-border);box-shadow:var(--shadow);border-radius:var(--r);padding:24px}
+
+/* profil */
+.profile-h{display:flex;gap:22px;align-items:flex-start;background:var(--surface);border:var(--card-border);box-shadow:var(--shadow);border-radius:var(--r);padding:26px}
+.tabs{display:flex;gap:4px;margin:24px 0 16px;padding:4px;background:var(--surface-2);border-radius:var(--pill);width:fit-content}
+.tabs button{padding:8px 16px;border-radius:var(--pill);font-size:14px;font-weight:600;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+body[data-theme="pulse"] .tabs button[aria-selected="true"]{background:var(--raise)}
+
+/* autentificare */
+.auth{min-height:100vh;display:grid;place-items:center;padding:24px;background:var(--bg)}
+.auth .box{background:var(--surface);border:var(--card-border);box-shadow:var(--shadow-lg);border-radius:var(--r);padding:36px;width:100%;max-width:400px}
+.auth h1{font-size:28px;margin:18px 0 4px}
+.auth label{display:block;font-size:13px;color:var(--muted);margin:16px 0 6px;font-weight:500}
+.auth input{width:100%;border:1px solid var(--line);border-radius:var(--r-sm);padding:11px 13px;font:inherit;background:var(--surface-2);color:var(--text)}
+.auth .btn{width:100%;margin-top:22px;padding:12px;justify-content:center}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(6,8,12,.55);backdrop-filter:blur(3px);display:grid;place-items:center;padding:20px;z-index:60}
+.modal{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow-lg);width:100%;max-width:430px;padding:26px}
+.modal h3{font-size:21px;margin:0 0 6px}
+.modal label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px;font-weight:500}
+.modal input,.modal select{width:100%;border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;font:inherit;background:var(--surface-2);color:var(--text)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.mobnav{display:none}
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}
+  .rail{display:none}
+  .wrap{padding:18px 16px 96px}
+  .topbar{padding:12px 16px}
+  .apibar{padding:9px 16px;top:53px}
+  .search{display:none}
+  .topbar h1{font-size:20px}
+  .stats{grid-template-columns:1fr 1fr}
+  .editor{grid-template-columns:1fr}
+  .sets .vol,.sets .cmp{display:none}
+  .article{padding:22px 18px}.article h1{font-size:28px}
+  .profile-h{flex-direction:column;gap:14px}
+  .mobnav{display:flex;position:fixed;left:12px;right:12px;bottom:12px;background:var(--surface);border:var(--card-border);box-shadow:var(--shadow-lg);border-radius:var(--pill);padding:6px;z-index:40}
+  body[data-theme="pulse"] .mobnav{background:var(--surface-2)}
+  .mobnav button{flex:1;color:var(--muted);font-size:10.5px;display:grid;gap:2px;padding:8px 0;border-radius:var(--pill);font-weight:600}
+  .mobnav button[aria-current="page"]{background:var(--accent);color:var(--on-accent)}
+  .mobnav .ic{font-size:16px}
+}
+</style>
+</head>
+<body data-theme="fresh" class="api">
+<div id="root"></div>
+<script>
+/* ---------------- date false (structura ta: user → weeks → workouts → exercises → sets) ------------- */
+const ME={id:1,name:"Bogdan Rusu",handle:"bogdan",color:"#3B6BFF",
+ bio:"Powerlifting de 3 ani. Îmi notez fiecare set ca să nu mă mint singur. Scriu despre backend și despre sală.",
+ gym:"Iron House, Chișinău",joined:"martie 2025",followers:184,following:62};
+const MUSCLE={piept:"var(--m1)",spate:"var(--m2)",picioare:"var(--m3)",umeri:"var(--m4)",brate:"var(--m5)"};
+const WEEKS=[
+ {id:4,name:"Săptămâna grea",note:"Intensificare înainte de deload",period:"8–14 sep",volume:31450,sessions:4,target:34000,current:true},
+ {id:3,name:"Săptămâna ușoară",note:"Deload programat, 60% din volum",period:"1–7 sep",volume:18900,sessions:3,target:20000},
+ {id:2,name:"Volum mediu",note:"",period:"25–31 aug",volume:28700,sessions:4,target:30000},
+ {id:1,name:"Reintrare după pauză",note:"Prima săptămână după vacanță",period:"18–24 aug",volume:21300,sessions:3,target:22000}];
+const WORKOUTS=[
+ {id:12,week:4,name:"Împins & tricepși",day:"12",dayName:"vin",date:"12 sep",min:74,volume:9840,muscles:["piept","brate"],exercises:[
+  {id:1,name:"Împins la bancă",muscle:"piept",sets:[{kg:60,reps:10,prev:60},{kg:80,reps:8,prev:80},{kg:92.5,reps:6,prev:90,pr:true},{kg:92.5,reps:5,prev:90},{kg:80,reps:8,prev:77.5}]},
+  {id:2,name:"Împins înclinat cu gantere",muscle:"piept",sets:[{kg:30,reps:10,prev:30},{kg:32.5,reps:9,prev:30},{kg:32.5,reps:8,prev:30}]},
+  {id:3,name:"Extensii la cablu",muscle:"brate",sets:[{kg:25,reps:14,prev:25},{kg:27.5,reps:12,prev:25},{kg:27.5,reps:11,prev:25}]}]},
+ {id:11,week:4,name:"Picioare",day:"10",dayName:"mie",date:"10 sep",min:88,volume:12600,muscles:["picioare"],exercises:[
+  {id:4,name:"Genuflexiuni cu bara",muscle:"picioare",sets:[{kg:80,reps:8,prev:80},{kg:110,reps:5,prev:105},{kg:125,reps:3,prev:120,pr:true},{kg:110,reps:5,prev:105}]},
+  {id:5,name:"Presă",muscle:"picioare",sets:[{kg:180,reps:12,prev:180},{kg:200,reps:10,prev:190},{kg:200,reps:9,prev:190}]},
+  {id:6,name:"Flexii picioare",muscle:"picioare",sets:[{kg:45,reps:12,prev:45},{kg:50,reps:10,prev:45}]}]},
+ {id:10,week:4,name:"Tras & biceps",day:"09",dayName:"mar",date:"9 sep",min:69,volume:8100,muscles:["spate","brate"],exercises:[
+  {id:7,name:"Îndreptări",muscle:"spate",sets:[{kg:100,reps:6,prev:100},{kg:130,reps:4,prev:130},{kg:140,reps:3,prev:135,pr:true}]},
+  {id:8,name:"Ramat cu bara",muscle:"spate",sets:[{kg:70,reps:10,prev:70},{kg:75,reps:8,prev:72.5},{kg:75,reps:8,prev:72.5}]},
+  {id:9,name:"Flexii cu bara Z",muscle:"brate",sets:[{kg:30,reps:12,prev:30},{kg:32.5,reps:10,prev:30}]}]},
+ {id:9,week:4,name:"Umeri & abdomen",day:"08",dayName:"lun",date:"8 sep",min:52,volume:4910,muscles:["umeri"],exercises:[
+  {id:10,name:"Împins deasupra capului",muscle:"umeri",sets:[{kg:45,reps:8,prev:45},{kg:50,reps:6,prev:47.5},{kg:50,reps:5,prev:47.5}]},
+  {id:11,name:"Ridicări laterale",muscle:"umeri",sets:[{kg:10,reps:15,prev:10},{kg:12,reps:12,prev:10},{kg:12,reps:11,prev:10}]}]}];
+const PROGRESS={
+ "Împins la bancă":[{w:"18 aug",kg:85},{w:"25 aug",kg:87.5},{w:"1 sep",kg:87.5},{w:"8 sep",kg:92.5}],
+ "Genuflexiuni cu bara":[{w:"18 aug",kg:110},{w:"25 aug",kg:115},{w:"1 sep",kg:120},{w:"8 sep",kg:125}],
+ "Îndreptări":[{w:"18 aug",kg:125},{w:"25 aug",kg:130},{w:"1 sep",kg:135},{w:"8 sep",kg:140}]};
+const POSTS=[
+ {id:1,title:"Cum mi-am construit propriul API de antrenamente în Laravel",author:ME,date:"12 sep",read:7,likes:48,tags:["laravel","php","api"],liked:false,
+  excerpt:"Trei luni de tracking în Notes m-au convins că îmi trebuie ceva al meu. Uite cum arată schema de relații și de ce am pus săptămâna deasupra antrenamentului.",
+  body:[["h2","De ce încă un app de tracking"],
+   ["p","Timp de trei luni mi-am notat antrenamentele în aplicația de notițe a telefonului. Funcționa, până în ziua în care am vrut să răspund la o întrebare banală: cât am împins luna trecută la aceeași grupă de repetări? Ca să afli asta dintr-o notiță trebuie s-o citești pe toată."],
+   ["p","Așa că am făcut ce face orice programator care caută un pretext bun: am deschis un proiect nou în Laravel."],
+   ["h2","Schema de relații"],
+   ["p","Prima variantă avea trei niveluri: user, antrenament, exercițiu. Am adăugat un al patrulea, seturile, pentru că greutatea și repetările se schimbă de la un set la altul și n-are sens să le ții într-un singur câmp text."],
+   ["q","Un utilizator are mai multe săptămâni, o săptămână are mai multe antrenamente, un antrenament are mai multe exerciții, un exercițiu are mai multe seturi."],
+   ["p","Nivelul de săptămână a venit ultimul și e cel care a schimbat aplicația cel mai mult. Îmi planific antrenamentele în blocuri, iar fără gruparea asta comparațiile n-aveau de ce să se agațe."],
+   ["h2","Ce m-a costat cel mai mult timp"],
+   ["p","Problema N+1. Prima versiune a endpoint-ului care returna un antrenament complet făcea 40 de query-uri pentru un singur răspuns. Un with() imbricat a redus totul la trei."]],
+  comments:[{who:"Andrei Munteanu",color:"#12925B",when:"acum 4 ore",text:"Curios de ce ai ales săptămâna ca entitate separată și n-ai filtrat pur și simplu după dată. Eu am încercat a doua variantă și regret."},
+   {who:"Elena Cibotaru",color:"#FF5A3C",when:"acum 2 ore",text:"Partea cu N+1 mi-a salvat weekendul. Aveam exact aceeași problemă pe un endpoint de comentarii."}]},
+ {id:2,title:"Progressive overload: ce înseamnă când ai stagnat 3 săptămâni",author:{name:"Elena Cibotaru",handle:"elena",color:"#FF5A3C"},date:"11 sep",read:5,likes:126,tags:["antrenament","teorie"],liked:true,
+  excerpt:"Greutatea de pe bară nu e singura variabilă pe care o poți crește. Iar dacă e singura pe care o urmărești, vei crede că ai stagnat mult mai des decât e cazul.",body:[["p","Text demonstrativ pentru machetă."]],comments:[]},
+ {id:3,title:"Sanctum vs Passport pentru o aplicație mobilă mică",author:{name:"Andrei Munteanu",handle:"andrei",color:"#12925B"},date:"9 sep",read:6,likes:91,tags:["laravel","auth"],liked:false,
+  excerpt:"Am pornit cu Passport pentru că suna mai serios. După două zile de configurat chei OAuth am trecut la Sanctum și am terminat autentificarea într-o oră.",body:[["p","Text demonstrativ pentru machetă."]],comments:[]},
+ {id:4,title:"Trei greșeli la îndreptări pe care le vezi în orice sală",author:{name:"Victor Lungu",handle:"victor",color:"#B45309"},date:"6 sep",read:4,likes:203,tags:["tehnică","antrenament"],liked:false,
+  excerpt:"Nu, spatele rotunjit nu e prima. Prima e că bara pornește prea departe de tibie, iar din asta decurg celelalte două.",body:[["p","Text demonstrativ pentru machetă."]],comments:[]}];
+
+/* ---------------- stare + helperi ---------------- */
+const state={route:"home",weekId:4,workoutId:12,postId:1,exercise:"Împins la bancă",tab:"posts",modal:null,likes:{}};
+const $=s=>document.querySelector(s);
+const fmt=n=>n.toLocaleString("ro-RO");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ini=n=>n.split(" ").map(w=>w[0]).slice(0,2).join("");
+const av=(p,s)=>`<span class="avatar" style="background:${p.color};${s?`width:${s}px;height:${s}px;font-size:${Math.round(s*.4)}px`:""}">${ini(p.name)}</span>`;
+const go=(r,p={})=>{Object.assign(state,p,{route:r});window.scrollTo(0,0);render()};
+const NAV=[{r:"home",ic:"◧",t:"Acasă"},{r:"weeks",ic:"▤",t:"Săptămâni"},{r:"progress",ic:"◹",t:"Progres"},{r:"blog",ic:"✎",t:"Blog"}];
+const THEMES=[["fresh","Fresh"],["ink","Ink"],["pulse","Pulse"]];
+const ENDPOINTS={
+ home:[["GET","/api/v1/weeks?current=1"],["GET","/api/v1/workouts?limit=3"],["GET","/api/v1/posts?feed=following"]],
+ weeks:[["GET","/api/v1/weeks"],["POST","/api/v1/weeks"]],
+ week:[["GET","/api/v1/weeks/{week}"],["GET","/api/v1/weeks/{week}/workouts"],["POST","/api/v1/weeks/{week}/workouts"]],
+ workout:[["GET","/api/v1/workouts/{workout}"],["POST","/api/v1/exercises/{exercise}/sets"],["PATCH","/api/v1/sets/{set}"],["DELETE","/api/v1/sets/{set}"]],
+ progress:[["GET","/api/v1/stats/volume?group=week"],["GET","/api/v1/stats/exercises/{exercise}/top-set"]],
+ blog:[["GET","/api/v1/posts?page=1&sort=recent"],["GET","/api/v1/tags"]],
+ post:[["GET","/api/v1/posts/{post}"],["POST","/api/v1/posts/{post}/likes"],["POST","/api/v1/posts/{post}/comments"]],
+ editor:[["POST","/api/v1/posts"],["PATCH","/api/v1/posts/{post}"]],
+ profile:[["GET","/api/v1/users/{user}"],["GET","/api/v1/users/{user}/posts"],["GET","/api/v1/users/{user}/weeks"]]};
+const TITLES={home:"Acasă",weeks:"Săptămâni",week:"Săptămână",workout:"Antrenament",progress:"Progres",blog:"Blog",post:"Articol",editor:"Articol nou",profile:"Profil"};
+
+/* ---------------- ecrane ---------------- */
+function vHome(){
+ const w=WEEKS[0];
+ return `<div class="stats">
+   <div class="stat"><div class="k">Volum săptămâna asta</div><p class="v num">${fmt(w.volume)}<s>kg</s></p><span class="delta up">↑ 9% vs. săptămâna trecută</span></div>
+   <div class="stat"><div class="k">Antrenamente</div><p class="v num">${w.sessions}<s>/ 5 planificate</s></p><span class="delta">Următorul: sâmbătă</span></div>
+   <div class="stat"><div class="k">Recorduri noi</div><p class="v num">3</p><span class="delta up">bancă · genuflexiuni · îndreptări</span></div>
+   <div class="stat"><div class="k">Timp în sală</div><p class="v num">4<s>h 43m</s></p><span class="delta">media 71 min / sesiune</span></div>
+ </div>
+ <div style="margin-top:28px">
+   <div class="sec-h"><h2>${esc(w.name)}</h2><span class="pill">în desfășurare · ${w.period}</span><span class="spacer"></span><a href="#" data-go="weeks">Toate săptămânile →</a></div>
+   <div class="wk-list">${WORKOUTS.slice(0,3).map(cWorkout).join("")}</div>
+ </div>
+ <div style="margin-top:28px">
+   <div class="sec-h"><h2>Din blog</h2><span class="spacer"></span><a href="#" data-go="blog">Vezi tot →</a></div>
+   <div class="feed">${POSTS.slice(0,2).map(cPost).join("")}</div>
+ </div>`;
+}
+function cWorkout(w){
+ return `<button class="wk" data-workout="${w.id}">
+  <div class="d" style="background:${MUSCLE[w.muscles[0]]}"><span class="num">${w.day}</span><small>${w.dayName}</small></div>
+  <div style="flex:1;min-width:0">
+    <h3>${esc(w.name)}</h3>
+    <div class="meta">${w.exercises.length} exerciții · ${w.exercises.reduce((a,e)=>a+e.sets.length,0)} seturi · ${w.min} min</div>
+    <div class="chips">${w.muscles.map(m=>`<span class="tag-b">${m}</span>`).join("")}</div>
+  </div>
+  <div style="text-align:right;flex:none"><span class="num" style="font-size:20px">${fmt(w.volume)}</span><div class="tiny muted">kg volum</div></div>
+ </button>`;
+}
+function vWeeks(){
+ return `<div class="row" style="margin-bottom:18px">
+   <p class="muted" style="margin:0;max-width:56ch">Grupezi antrenamentele în săptămâni cu nume proprii, ca să compari blocuri întregi, nu doar zile.</p>
+   <span class="spacer"></span><button class="btn primary" data-modal="week">+ Săptămână nouă</button></div>
+ <div class="weeks">${WEEKS.map((w,i)=>`<button class="week" data-week="${w.id}">
+   <div class="idx"><span class="num">${WEEKS.length-i}</span></div>
+   <div style="flex:1;min-width:0">
+     <h3>${esc(w.name)}${w.current?'<span class="pill" style="background:var(--accent-soft);color:var(--pos)">activă</span>':""}</h3>
+     <div class="meta">${w.period} · ${w.sessions} antrenamente${w.note?" · "+esc(w.note):""}</div>
+     <div class="bar"><i style="width:${Math.min(100,Math.round(w.volume/w.target*100))}%;${w.current?"":"background:var(--muted)"}"></i></div>
+   </div>
+   <div style="text-align:right;flex:none"><span class="num" style="font-size:20px">${fmt(w.volume)}</span><div class="tiny muted">din ${fmt(w.target)} kg</div></div>
+ </button>`).join("")}</div>`;
+}
+function vWeek(){
+ const w=WEEKS.find(x=>x.id===state.weekId), list=WORKOUTS.filter(x=>x.week===w.id);
+ return `<button class="btn ghost sm" data-go="weeks" style="margin-bottom:18px">← Săptămâni</button>
+ <div class="row" style="align-items:flex-start;margin-bottom:20px">
+   <div><h2 style="font-size:28px;margin:0">${esc(w.name)}</h2><p class="muted" style="margin:3px 0 0">${w.period}${w.note?" · "+esc(w.note):""}</p></div>
+   <span class="spacer"></span><button class="btn primary" data-modal="workout">+ Antrenament</button></div>
+ ${list.length?`<div class="wk-list">${list.map(cWorkout).join("")}</div>`
+  :`<div class="empty"><p>Săptămâna e goală. Primul antrenament devine referința pentru comparații.</p><button class="btn primary" data-modal="workout">+ Antrenament</button></div>`}`;
+}
+function vWorkout(){
+ const w=WORKOUTS.find(x=>x.id===state.workoutId), sets=w.exercises.reduce((a,e)=>a+e.sets.length,0);
+ return `<button class="btn ghost sm" data-week="${w.week}" style="margin-bottom:18px">← ${esc(WEEKS.find(x=>x.id===w.week).name)}</button>
+ <div class="row" style="align-items:flex-start;margin-bottom:6px">
+   <div><h2 style="font-size:30px;margin:0">${esc(w.name)}</h2>
+   <p class="muted" style="margin:3px 0 0">${w.date} · ${w.min} min · ${w.exercises.length} exerciții · ${sets} seturi · ${fmt(w.volume)} kg</p></div>
+   <span class="spacer"></span><button class="btn ghost" data-modal="exercise">+ Exercițiu</button></div>
+ <p class="tiny muted" style="margin:0 0 18px">Coloana din dreapta compară fiecare set cu aceeași poziție din antrenamentul anterior de același tip.</p>
+ ${w.exercises.map(exBlock).join("")}
+ <button class="btn ghost" data-modal="exercise" style="width:100%;padding:14px;border-style:dashed">+ Adaugă exercițiu</button>`;
+}
+function exBlock(e){
+ const top=Math.max(...e.sets.map(s=>s.kg)), vol=e.sets.reduce((a,s)=>a+s.kg*s.reps,0);
+ return `<div class="ex">
+  <div class="ex-h"><span class="tag" style="background:${MUSCLE[e.muscle]}"></span><h3>${esc(e.name)}</h3>
+   <span class="top">set maxim <b>${top} kg</b> · volum <b>${fmt(vol)} kg</b></span></div>
+  <table class="sets"><thead><tr><th>set</th><th>greutate</th><th>repetări</th><th class="vol">volum</th><th class="cmp">vs. data trecută</th><th></th></tr></thead><tbody>
+  ${e.sets.map((s,i)=>{const d=s.kg-s.prev;
+    const cmp=d>0?`<span class="up" style="font-weight:600">↑ +${d} kg</span>`:d<0?`<span class="down" style="font-weight:600">↓ ${d} kg</span>`:`<span class="muted">la fel</span>`;
+    return `<tr><td class="n">${i+1}</td>
+    <td class="kg"><span class="num">${s.kg}</span><s>kg</s>${s.pr?'<span class="pr">RECORD</span>':""}</td>
+    <td class="reps"><span class="num" style="font-size:19px">${s.reps}</span> <span class="tiny muted">rep</span></td>
+    <td class="vol">${fmt(s.kg*s.reps)} kg</td><td class="cmp">${cmp}</td>
+    <td style="text-align:right;width:44px"><button class="btn ghost sm" title="Editează">···</button></td></tr>`}).join("")}
+  </tbody></table>
+  <div class="ex-f"><button class="btn ghost sm" data-modal="set">+ Set</button><span class="tiny muted">Ultimul set se copiază automat, schimbi doar ce e diferit.</span></div>
+ </div>`;
+}
+function vProgress(){
+ const names=Object.keys(PROGRESS), data=PROGRESS[state.exercise];
+ const max=Math.max(...WEEKS.map(w=>w.volume))*1.12, bars=[...WEEKS].reverse();
+ const lo=Math.min(...data.map(d=>d.kg))-12, hi=Math.max(...data.map(d=>d.kg))+6;
+ const X=i=>58+i*(556/(data.length-1)), Y=v=>168-(v-lo)/(hi-lo)*128;
+ const pts=data.map((d,i)=>[X(i),Y(d.kg)]);
+ return `<div class="chart" style="margin-bottom:14px">
+  <div class="sec-h"><h2>Volum pe săptămână</h2><span class="pill">kilograme ridicate, total</span></div>
+  <svg viewBox="0 0 640 220" width="100%" height="220" role="img" aria-label="Volum pe săptămână">
+   ${[0,.25,.5,.75,1].map(t=>`<line x1="44" x2="632" y1="${188-t*156}" y2="${188-t*156}" stroke="currentColor" opacity=".12"/>
+     <text x="0" y="${192-t*156}" font-size="11" fill="currentColor" opacity=".5">${Math.round(max*t/1000)}k</text>`).join("")}
+   ${bars.map((w,i)=>{const h=w.volume/max*156,x=62+i*146;
+     return `<rect x="${x}" y="${188-h}" width="82" height="${h}" rx="8" fill="${w.current?"var(--accent)":"var(--raise)"}"/>
+      <text x="${x+41}" y="${182-h}" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor" font-family="var(--num)">${fmt(w.volume)}</text>
+      <text x="${x+41}" y="207" text-anchor="middle" font-size="11.5" fill="currentColor" opacity=".55">${esc(w.name)}</text>`}).join("")}
+  </svg></div>
+ <div class="chart">
+  <div class="sec-h"><h2>Setul maxim pe exercițiu</h2></div>
+  <div class="pick">${names.map(n=>`<button data-ex="${esc(n)}" aria-pressed="${n===state.exercise}">${esc(n)}</button>`).join("")}</div>
+  <svg viewBox="0 0 640 210" width="100%" height="210" role="img" aria-label="Evoluția setului maxim">
+   <defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+     <stop offset="0%" stop-color="var(--accent)" stop-opacity=".30"/><stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>
+   <polygon fill="url(#g)" points="${pts[0][0]},168 ${pts.map(p=>p.join(",")).join(" ")} ${pts[pts.length-1][0]},168"/>
+   <polyline fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="${pts.map(p=>p.join(",")).join(" ")}"/>
+   ${pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="5.5" fill="var(--surface)" stroke="var(--accent)" stroke-width="3"/>
+     <text x="${p[0]}" y="${p[1]-16}" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor" font-family="var(--num)">${data[i].kg}</text>
+     <text x="${p[0]}" y="190" text-anchor="middle" font-size="11.5" fill="currentColor" opacity=".55">${data[i].w}</text>`).join("")}
+  </svg>
+  <p class="muted tiny" style="margin:8px 0 0">De la ${data[0].kg} kg la ${data[data.length-1].kg} kg în ${data.length} săptămâni — plus ${(data[data.length-1].kg-data[0].kg).toFixed(1)} kg.</p>
+ </div>`;
+}
+function cPost(p){
+ const liked=state.likes[p.id]??p.liked, n=p.likes+(liked&&!p.liked?1:0)-(!liked&&p.liked?1:0);
+ return `<button class="post" data-post="${p.id}">
+  <div style="flex:none">${av(p.author,40)}</div>
+  <div style="flex:1;min-width:0">
+   <div class="by">${esc(p.author.name)} · ${p.date} · ${p.read} min citire</div>
+   <h3>${esc(p.title)}</h3><p class="exc">${esc(p.excerpt)}</p>
+   <div class="row" style="margin-top:12px">
+    <div class="tags">${p.tags.map(t=>`<span class="tag-b">#${t}</span>`).join("")}</div>
+    <span class="spacer"></span><span class="tiny muted">♥ ${n} · ${p.comments.length} comentarii</span></div>
+  </div></button>`;
+}
+function vBlog(){
+ return `<div class="row" style="margin-bottom:18px">
+  <div class="tags">${["toate","laravel","php","antrenament","tehnică"].map((t,i)=>`<span class="tag-b${i===0?" on":""}">${t}</span>`).join("")}</div>
+  <span class="spacer"></span><button class="btn primary" data-go="editor">Scrie un articol</button></div>
+ <div class="feed">${POSTS.map(cPost).join("")}</div>`;
+}
+function vPost(){
+ const p=POSTS.find(x=>x.id===state.postId), liked=state.likes[p.id]??p.liked;
+ const n=p.likes+(liked&&!p.liked?1:0)-(!liked&&p.liked?1:0);
+ return `<button class="btn ghost sm" data-go="blog" style="margin-bottom:18px">← Blog</button>
+ <article class="article">
+  <div class="tags" style="margin-bottom:14px">${p.tags.map(t=>`<span class="tag-b">#${t}</span>`).join("")}</div>
+  <h1>${esc(p.title)}</h1>
+  <div class="row" style="margin:16px 0 28px">${av(p.author,42)}
+   <div><div style="font-weight:600;font-size:14.5px">${esc(p.author.name)}</div><div class="tiny muted">${p.date} · ${p.read} min citire</div></div>
+   <span class="spacer"></span><button class="btn ghost sm">Urmărește</button></div>
+  ${p.body.map(([t,c])=>t==="p"?`<p>${esc(c)}</p>`:t==="h2"?`<h2>${esc(c)}</h2>`:`<blockquote>${esc(c)}</blockquote>`).join("")}
+  <div class="likebar"><button class="like" data-like="${p.id}" aria-pressed="${liked}">♥ ${n}</button>
+   <span class="muted tiny">${p.comments.length} comentarii</span><span class="spacer"></span><button class="btn ghost sm">Salvează</button></div>
+  <h2 style="margin-top:0">Comentarii</h2>
+  <div class="row" style="align-items:flex-start;gap:12px;margin:16px 0 22px">${av(ME,38)}
+   <div style="flex:1"><textarea placeholder="Scrie un comentariu" style="min-height:76px"></textarea>
+   <button class="btn primary sm" style="margin-top:10px">Publică</button></div></div>
+  ${p.comments.length?p.comments.map(c=>`<div class="comment">${av({name:c.who,color:c.color},38)}
+    <div style="flex:1"><div class="who"><b>${esc(c.who)}</b> <span class="muted tiny">· ${c.when}</span></div>
+    <p>${esc(c.text)}</p><div class="tiny muted" style="margin-top:8px">♥ 4 · Răspunde</div></div></div>`).join("")
+   :`<div class="empty"><p>Niciun comentariu încă. Scrie primul.</p></div>`}
+ </article>`;
+}
+function vEditor(){
+ return `<button class="btn ghost sm" data-go="blog" style="margin-bottom:18px">← Renunță</button>
+ <div class="editor"><div>
+  <input class="ttl" value="Ce am învățat mutând jurnalul din caiet în API">
+  <input style="margin-top:10px" value="laravel, api, antrenament">
+  <textarea style="margin-top:10px">## De ce am renunțat la caiet
+
+Caietul nu pierde datele, dar nici nu ți le arată. După șase luni de însemnări aveam 40 de pagini și zero răspunsuri.
+
+> Dacă nu poți compara, nu urmărești progresul — doar ții evidența.</textarea>
+  <div class="row" style="margin-top:14px"><button class="btn primary">Publică</button><button class="btn ghost">Salvează ciornă</button></div>
+ </div>
+ <div class="prev"><div class="tiny muted" style="margin-bottom:14px">Previzualizare</div>
+  <h1 style="font-size:27px;margin:0 0 14px;line-height:1.15">Ce am învățat mutând jurnalul din caiet în API</h1>
+  <h2 style="font-size:20px;margin:20px 0 6px">De ce am renunțat la caiet</h2>
+  <p style="font-size:15.5px;line-height:1.7">Caietul nu pierde datele, dar nici nu ți le arată. După șase luni de însemnări aveam 40 de pagini și zero răspunsuri.</p>
+  <blockquote style="margin:18px 0;padding:12px 16px;border-left:3px solid var(--accent);background:var(--surface-2);border-radius:0 8px 8px 0;color:var(--muted)">Dacă nu poți compara, nu urmărești progresul — doar ții evidența.</blockquote>
+ </div></div>`;
+}
+function vProfile(){
+ const mine=POSTS.filter(p=>p.author.handle===ME.handle);
+ return `<div class="profile-h">${av(ME,80)}
+  <div style="flex:1;min-width:0">
+   <h2 style="font-size:27px;margin:0">${esc(ME.name)}</h2>
+   <div class="muted tiny">@${ME.handle} · ${esc(ME.gym)} · din ${ME.joined}</div>
+   <p style="margin:12px 0 0;max-width:60ch">${esc(ME.bio)}</p>
+   <div class="row tiny muted" style="gap:18px;margin-top:14px">
+    <span><b style="color:var(--text)">${ME.followers}</b> urmăritori</span>
+    <span><b style="color:var(--text)">${ME.following}</b> urmărește</span>
+    <span><b style="color:var(--text)">${WORKOUTS.length}</b> antrenamente publice</span></div></div>
+  <button class="btn ghost sm">Editează profilul</button></div>
+ <div class="tabs">
+  <button data-tab="posts" aria-selected="${state.tab==="posts"}">Articole (${mine.length})</button>
+  <button data-tab="workouts" aria-selected="${state.tab==="workouts"}">Antrenamente</button>
+  <button data-tab="records" aria-selected="${state.tab==="records"}">Recorduri</button></div>
+ ${state.tab==="posts"?`<div class="feed">${mine.map(cPost).join("")}</div>`
+  :state.tab==="workouts"?`<div class="wk-list">${WORKOUTS.map(cWorkout).join("")}</div>`
+  :`<div class="stats">
+    <div class="stat"><div class="k">Împins la bancă</div><p class="v num">92.5<s>kg × 6</s></p><span class="delta up">↑ 7.5 kg / 4 săpt.</span></div>
+    <div class="stat"><div class="k">Genuflexiuni</div><p class="v num">125<s>kg × 3</s></p><span class="delta up">↑ 15 kg / 4 săpt.</span></div>
+    <div class="stat"><div class="k">Îndreptări</div><p class="v num">140<s>kg × 3</s></p><span class="delta up">↑ 15 kg / 4 săpt.</span></div>
+    <div class="stat"><div class="k">Total powerlifting</div><p class="v num">357<s>kg</s></p><span class="delta">estimare 1RM</span></div></div>`}`;
+}
+function vLogin(){
+ return `<div class="auth"><div class="box">
+  <div class="wordmark" style="padding:0"><span class="mark">S</span><b>Setlog</b></div>
+  <h1>Bine ai revenit</h1><p class="muted" style="margin:0">Intră în cont ca să-ți continui săptămâna.</p>
+  <label for="em">Email</label><input id="em" type="email" value="bogdan@example.com">
+  <label for="pw">Parolă</label><input id="pw" type="password" value="parolasecreta">
+  <button class="btn primary" data-go="home">Intră în cont</button>
+  <p class="tiny muted" style="text-align:center;margin:18px 0 0">Nu ai cont? <a href="#" style="color:var(--accent);font-weight:600">Creează unul</a></p>
+ </div></div>`;
+}
+function modal(){
+ if(!state.modal) return "";
+ const M={
+  week:{t:"Săptămână nouă",s:"Un bloc de antrenamente pe care îl poți compara ca întreg.",b:`<label>Nume</label><input placeholder="ex. Săptămâna grea" autofocus>
+   <label>Notă (opțional)</label><input placeholder="Ce urmărești în săptămâna asta">
+   <div class="duo"><div><label>Început</label><input type="date" value="2026-09-15"></div><div><label>Sfârșit</label><input type="date" value="2026-09-21"></div></div>`,c:"Creează săptămâna"},
+  workout:{t:"Antrenament nou",s:"",b:`<label>Nume</label><input placeholder="ex. Împins & tricepși" autofocus>
+   <label>Data</label><input type="date" value="2026-09-15">
+   <label>Săptămâna</label><select>${WEEKS.map(w=>`<option${w.id===state.weekId?" selected":""}>${esc(w.name)}</option>`).join("")}</select>`,c:"Creează antrenamentul"},
+  exercise:{t:"Exercițiu nou",s:"",b:`<label>Nume</label><input placeholder="ex. Ramat cu gantera" autofocus>
+   <label>Grupa musculară</label><select>${Object.keys(MUSCLE).map(m=>`<option>${m}</option>`).join("")}</select>`,c:"Adaugă exercițiul"},
+  set:{t:"Set nou",s:"Data trecută la acest exercițiu: 90 kg × 6.",b:`<div class="duo"><div><label>Greutate (kg)</label><input type="number" value="92.5" step="2.5" autofocus></div>
+   <div><label>Repetări</label><input type="number" value="6"></div></div>`,c:"Salvează setul"}}[state.modal];
+ return `<div class="scrim" data-close="1"><div class="modal" role="dialog" aria-modal="true">
+  <h3>${M.t}</h3>${M.s?`<p class="muted tiny" style="margin:0">${M.s}</p>`:""}${M.b}
+  <div class="row" style="margin-top:22px"><button class="btn primary" data-close="1">${M.c}</button><button class="btn ghost" data-close="1">Renunță</button></div></div></div>`;
+}
+
+/* ---------------- randare ---------------- */
+function render(){
+ if(state.route==="login"){$("#root").innerHTML=vLogin();return}
+ const view={home:vHome,weeks:vWeeks,week:vWeek,workout:vWorkout,progress:vProgress,blog:vBlog,post:vPost,editor:vEditor,profile:vProfile}[state.route]();
+ const navKey={week:"weeks",workout:"weeks",post:"blog",editor:"blog"}[state.route]||state.route;
+ const eps=ENDPOINTS[state.route]||[], th=document.body.dataset.theme;
+ $("#root").innerHTML=`<div class="app">
+  <aside class="rail">
+   <div class="wordmark"><span class="mark">S</span><b>Setlog</b></div>
+   <nav class="nav">${NAV.map(n=>`<button data-go="${n.r}" ${navKey===n.r?'aria-current="page"':""}><span class="ic">${n.ic}</span>${n.t}</button>`).join("")}</nav>
+   <div class="foot">
+    <button class="me" data-go="profile">${av(ME)}<span><span style="font-size:13.5px;font-weight:600">${esc(ME.name)}</span><small>@${ME.handle}</small></span></button>
+    <button class="me" data-go="login" style="color:var(--muted);font-size:13px"><span class="ic">⤶</span>Ieși din cont</button></div>
+  </aside>
+  <div class="main">
+   <header class="topbar"><h1>${TITLES[state.route]}</h1><span class="spacer"></span>
+    <div class="search"><i>⌕</i><input placeholder="Caută exerciții sau articole"></div>
+    <div class="themes">${THEMES.map(([k,l])=>`<button data-theme="${k}" aria-pressed="${th===k}">${l}</button>`).join("")}</div>
+    <button class="toggle" data-api="1"><span class="dot"></span>API</button></header>
+   ${eps.length?`<div class="apibar"><b>Ecranul consumă:</b>${eps.map(([m,u])=>`<span class="ep"><span class="m ${m}">${m}</span> ${esc(u)}</span>`).join("")}</div>`:""}
+   <div class="wrap">${view}</div>
+  </div></div>
+ <nav class="mobnav">${NAV.map(n=>`<button data-go="${n.r}" ${navKey===n.r?'aria-current="page"':""}><span class="ic">${n.ic}</span>${n.t}</button>`).join("")}</nav>
+ ${modal()}`;
+}
+document.addEventListener("click",e=>{
+ const t=e.target.closest("[data-go],[data-week],[data-workout],[data-post],[data-modal],[data-close],[data-like],[data-ex],[data-tab],[data-api],[data-theme]");
+ if(!t)return; e.preventDefault();
+ if(t.dataset.theme){document.body.dataset.theme=t.dataset.theme;return render()}
+ if(t.dataset.api!==undefined)return document.body.classList.toggle("api");
+ if(t.dataset.close){state.modal=null;return render()}
+ if(t.dataset.modal){state.modal=t.dataset.modal;return render()}
+ if(t.dataset.like){const id=+t.dataset.like,p=POSTS.find(x=>x.id===id);state.likes[id]=!(state.likes[id]??p.liked);return render()}
+ if(t.dataset.ex){state.exercise=t.dataset.ex;return render()}
+ if(t.dataset.tab){state.tab=t.dataset.tab;return render()}
+ if(t.dataset.week)return go("week",{weekId:+t.dataset.week});
+ if(t.dataset.workout)return go("workout",{workoutId:+t.dataset.workout});
+ if(t.dataset.post)return go("post",{postId:+t.dataset.post});
+ if(t.dataset.go)return go(t.dataset.go);
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&state.modal){state.modal=null;render()}});
+render();
+</script>
+</body>
+</html>
